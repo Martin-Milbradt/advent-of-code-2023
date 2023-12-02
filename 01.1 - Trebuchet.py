@@ -1,7 +1,6 @@
-import modules
+from modules import DataManager
 
-modules.init()
-data = modules.get_data_string("1")
+data = DataManager(__file__).get_data_string()
 sum = 0
 for val in data:
     first_number = next(char for char in val if char.isdigit())

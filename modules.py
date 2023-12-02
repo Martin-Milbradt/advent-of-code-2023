@@ -3,13 +3,16 @@ from pathlib import Path
 from typing import List
 
 
-def init():
-    os.chdir(Path(__file__).parent)
+class DataManager:
+    def __init__(self, file):
+        os.chdir(Path(file).parent)
+        filename = os.path.basename(file)
+        self.challenge = filename[:2]
 
+    def get_data_string(self) -> List[str]:
+        return (
+            open(f"data/{self.challenge}.txt", "r", encoding="utf8").read().splitlines()
+        )
 
-def get_data_string(name: str) -> List[str]:
-    return open(f"data/{name}.txt", "r", encoding="utf8").read().splitlines()
-
-
-def get_data(name: str, type: type) -> List:
-    return list(map(type, get_data_string(name)))
+    def get_data(self, type: type) -> List:
+        return list(map(type, self.get_data_string()))

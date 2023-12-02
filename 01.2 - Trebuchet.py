@@ -1,4 +1,6 @@
-import modules
+from modules import DataManager
+
+data = DataManager(__file__).get_data_string()
 
 num_dict = {
     "one": "1",
@@ -12,8 +14,6 @@ num_dict = {
     "nine": "9",
 }
 
-modules.init()
-data = modules.get_data_string("1")
 sum = 0
 for val in data:
     for key, value in num_dict.items():
