@@ -11,7 +11,7 @@ class DataManager:
 
     def get_data_string(self) -> List[str]:
         with open(f"data/{self.challenge}.txt") as f:
-            return f.readlines()
+            return [line.strip() for line in f.readlines()]
 
     def get_data(self, type: type) -> List:
         return list(map(type, self.get_data_string()))
