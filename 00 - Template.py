@@ -3,12 +3,14 @@ from modules import DataManager
 data = DataManager(__file__).get_data_string()
 
 
-# Testdata (optional) ---------------------------------------------------------------------------
+# Testdata -------------------------------------------------------------------------------------
 
 
-# data = [
-#     ...
-# ]
+test_data_string = """
+    ...
+"""
+
+test_data = test_data_string.strip().split("\n")
 
 
 # Shared ---------------------------------------------------------------------------------------
@@ -17,19 +19,21 @@ data = DataManager(__file__).get_data_string()
 # Part 1 ---------------------------------------------------------------------------------------
 
 
-def part1() -> int:
+def part1(input=data) -> int:
     pass
 
 
 # Part 2 ---------------------------------------------------------------------------------------
 
 
-def part2() -> int:
+def part2(input=data) -> int:
     pass
 
 
 # Output ---------------------------------------------------------------------------------------
 
 
+print("Test Part 1:", part1(test_data))
 print("Part 1:", part1())
+print("Test Part 2:", part2(test_data))
 print("Part 2:", part2())
