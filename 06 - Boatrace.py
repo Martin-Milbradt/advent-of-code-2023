@@ -1,4 +1,6 @@
 from modules import DataManager
+import math
+import sys
 
 data = DataManager(__file__).get_data_string()
 
@@ -18,17 +20,24 @@ test_data = test_data_string.strip().split("\n")
 
 
 def calculate_ways_to_win_race(total_time, record_distance):
-    first_win = None
-    for hold_time in range(total_time):
-        travel_time = total_time - hold_time
-        if hold_time * travel_time > record_distance:
-            if not first_win:
-                first_win = hold_time
-        elif first_win:
-            return hold_time - first_win
-    raise ValueError(
-        f"No solution found for total_time: {total_time}, record_distance: {record_distance}"
-    )
+    # Uses the quadratic formula to solve hold_time * (total_time - hold_time) - record_distance > 0
+    b = total_time / 2
+    sqrt = math.sqrt(b**2 - record_distance)
+    shortest_hold = b - sqrt
+    longest_hold = b + sqrt
+    return int(
+        previous(longest_hold)
+        - next(shortest_hold)
+        + 1  # ceil and floor don't work because of exact matches
+    )  # cast to int because of machine precision
+
+
+def next(number) -> int:
+    return number + 1 if number.is_integer() else math.ceil(number)
+
+
+def previous(number) -> int:
+    return number - 1 if number.is_integer() else math.floor(number)
 
 
 # Part 1 ---------------------------------------------------------------------------------------
