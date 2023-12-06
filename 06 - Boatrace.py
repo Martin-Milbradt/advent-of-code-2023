@@ -18,20 +18,17 @@ test_data = test_data_string.strip().split("\n")
 
 
 def calculate_ways_to_win_race(total_time, record_distance):
-    ways_to_win = 0
-    won = False
+    first_win = None
     for hold_time in range(total_time):
-        speed = hold_time
         travel_time = total_time - hold_time
-        distance = speed * travel_time
-        if distance > record_distance:
-            ways_to_win += 1
-            won = True
-            continue
-        # winning -> loosing means our total distance will never be enough anymore
-        if won:
-            break
-    return ways_to_win
+        if hold_time * travel_time > record_distance:
+            if not first_win:
+                first_win = hold_time
+        elif first_win:
+            return hold_time - first_win
+    raise ValueError(
+        f"No solution found for total_time: {total_time}, record_distance: {record_distance}"
+    )
 
 
 # Part 1 ---------------------------------------------------------------------------------------
