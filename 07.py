@@ -1,4 +1,5 @@
 from modules import DataManager
+from enum import Enum
 
 data = DataManager(__file__).get_data_string()
 
@@ -20,96 +21,96 @@ test_data = test_data_string.strip().split("\n")
 # Shared ---------------------------------------------------------------------------------------
 
 
-ranking = {
-    "Five of a kind": 5,
-    "Four of a kind": 4,
-    "Full house": 3.5,
-    "Three of a kind": 3,
-    "Two pair": 2.5,
-    "One pair": 2,
-    "High card": 1,
-}
+class Ranking(Enum):
+    FIVE = 50
+    FOUR = 40
+    FULL = 32
+    THREE = 30
+    PAIRS = 22
+    TWO = 20
+    ONE = 10
 
 
-values = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10}
-
-
-def calculate_total_winnings(input, part2=False):
+def calculate_total_winnings(input, rank_hand, values):
     hands = []
 
     # Parse input and classify each hand
     for line in input:
         hand, bid = line.split()
         bid = int(bid)
-        if part2:
-            hand_type = classify_hand_joker(hand)
-        else:
-            hand_type = classify_hand_jack(hand)
+        hand_type = rank_hand(hand)
 
         hands.append((hand_type, hand, bid))
 
     # Sort hands by type and then by card values
-    hands.sort(key=lambda x: (ranking.get(x[0]), [card_value(card) for card in x[1]]))
+    hands.sort(key=lambda x: (x[0].value, [card_value(card, values) for card in x[1]]))
     winnings = [bid * (rank + 1) for rank, (_, _, bid) in enumerate(hands)]
     total_winnings = sum(winnings)
 
     return total_winnings
 
 
-def card_value(card, part2=False):
-    if card in values.keys():
-        return 0 if card == "J" and part2 else values[card]
-    return int(card)
-
-
-def classify_hand(counts):
+def rank_hand(counts) -> Ranking:
+    if sum(counts.values()) != 5:
+        raise ValueError(f"Not a legal hand: {counts}")
     max_count = max(counts.values())
     # Classify based on counts
     if max_count == 5:
-        return "Five of a kind"
+        return Ranking.FIVE
     elif max_count == 4:
-        return "Four of a kind"
-    # part2: "aabbJ" is a full house and counted as [3 (2a+J), 3 (2b+J), 1 (J)]
-    elif sorted(counts.values()) in ([2, 3], [1, 3, 3]):
-        return "Full house"
+        return Ranking.FOUR
+    elif sorted(counts.values()) == [2, 3]:
+        return Ranking.FULL
     elif max_count == 3:
-        return "Three of a kind"
+        return Ranking.THREE
     elif sorted(counts.values()) == [1, 2, 2]:
-        return "Two pair"
+        return Ranking.PAIRS
     elif max_count == 2:
-        return "One pair"
-    else:
-        # Precaution, should not happen
-        if max_count > 1:
-            raise ValueError(f"Unexpected max count for high card: {max_count}")
-        return "High card"
+        return Ranking.TWO
+    elif max_count == 1:
+        return Ranking.ONE
+    raise ValueError(f"No classification found: {counts}")
+
+
+def card_value(card, values):
+    if card in values.keys():
+        return values[card]
+    return int(card)
 
 
 # Part 1 ---------------------------------------------------------------------------------------
 
 
+values1 = {"A": 14, "K": 13, "Q": 12, "J": 11, "T": 10}
+
+
 def part1(input=data) -> int:
-    return calculate_total_winnings(input)
+    return calculate_total_winnings(input, rank_hand_1, values1)
 
 
-def classify_hand_jack(hand):
+def rank_hand_1(hand):
     counts = {card: hand.count(card) for card in set(hand)}
-    return classify_hand(counts)
+    return rank_hand(counts)
 
 
 # Part 2 ---------------------------------------------------------------------------------------
 
 
+values2 = {"A": 14, "K": 13, "Q": 12, "T": 10, "J": 0}
+
+
 def part2(input=data) -> int:
-    return calculate_total_winnings(input, True)
+    return calculate_total_winnings(input, rank_hand_2, values2)
 
 
-def classify_hand_joker(hand):
-    counts = {
-        card: hand.count(card) + (0 if card == "J" else hand.count("J"))
-        for card in set(hand)
-    }
-    return classify_hand(counts)
+def rank_hand_2(hand):
+    counts = {card: hand.count(card) for card in set(hand)}
+    jokers = counts.pop("J", 0)
+    if jokers == 5:
+        return Ranking.FIVE
+    most_common_card = max(counts, key=counts.get)
+    counts[most_common_card] += jokers
+    return rank_hand(counts)
 
 
 # Output ---------------------------------------------------------------------------------------
