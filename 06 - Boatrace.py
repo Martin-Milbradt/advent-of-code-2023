@@ -1,6 +1,5 @@
 from modules import DataManager
 import math
-import sys
 
 data = DataManager(__file__).get_data_string()
 
