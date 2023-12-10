@@ -11,7 +11,7 @@ test_data_string = """
 """
 
 test_data = test_data_string.strip().split("\n")
-
+expected = (None, None, None, None)
 
 # Shared ---------------------------------------------------------------------------------------
 
@@ -33,7 +33,14 @@ def part2(input=data) -> int:
 # Output ---------------------------------------------------------------------------------------
 
 
-print("Test Part 1:", part1(test_data))
-print("Part 1:", part1())
-print("Test Part 2:", part2(test_data))
-print("Part 2:", part2())
+results = [
+    ("Test Part 1:", part1(test_data), expected[0]),
+    ("Part 1:", part1(), expected[1]),
+    ("Test Part 2:", part2(test_data), expected[2]),
+    ("Part 2:", part2(), expected[3]),
+]
+
+for result in results:
+    print(result[0], result[1])
+    if result[2] and result[1] != result[2]:
+        print("Expected:", result[2])
