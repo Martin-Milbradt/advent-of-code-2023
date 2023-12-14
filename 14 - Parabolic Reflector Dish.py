@@ -100,9 +100,7 @@ def part1(input=data) -> int:
 
 def part2(input=data, cycles=1e9) -> int:
     global dirs
-    o_count = sum(line.count("O") for line in input)
     steps = int(4 * cycles)
-    cycle = 0
     height = len(input)
     width = len(input[0])
     grid = [list(s) for s in input]
@@ -118,34 +116,28 @@ def part2(input=data, cycles=1e9) -> int:
             dirs[1].append([i, j])  # East
             dirs[3].append([i, height - j - 1])  # West
     for i in range(steps):
-        if sum(line.count("O") for line in grid) != o_count:
-            print("ERROR: Rock count changed!")
-            return -1
         tilt(grid, i % 4)  # 0 = north, 1 = west, 2 = south, 3 = east
         if i % 4 == 3:
-            cycle += 1
             identifier = "".join(c for row in grid for c in row)
             # Too much to brute force, so we look for periods
             if identifier in visited:
                 idx = visited.index(identifier)
-                period = cycle - idx
-                # If the period would start at the beginning this would be the first occurence
-                final_grid_offset = int((cycles - cycle) % period)
-                # Get the occurence of the final grid in the discovered period
-                next_occurence = final_grid_offset + cycle
-                last_occurence = next_occurence - period
-                final_grid = grids[last_occurence]
+                period = (i + 1) / 4 - idx
                 if debug:
-                    print("Cycle found after", i + 1, "steps,", cycle, "cycles.")
+                    print("Cycle found after", i + 1, "steps,", (i + 1) / 4, "cycles.")
                     print("Cylce length:", period)
                     print("Current Grid")
                     print_grid(grid)
                     print("Matching Grid", idx + 1)
                     print_grid(grids[idx])
                     print("Previous occurence after cycle:", idx + 1)
-                    print(last_occurence + 1)
-                value = calculate_load(final_grid)
-                return value
+                    print(idx + 1)
+                # If the period would start at the beginning this would be the first occurence
+                offset = int((cycles - idx) % period)
+                # Get the occurence of the final grid in the discovered period
+                idx += offset
+                final = grids[idx]
+                return calculate_load(final)
             visited.append(identifier)
             # Saving all grids is a memory hungry approach, but it's fast
             grids.append(copy.deepcopy(grid))
