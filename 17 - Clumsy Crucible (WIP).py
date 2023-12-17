@@ -1,4 +1,5 @@
 from modules import DataManager
+import heapq
 
 data = DataManager(__file__).get_data_string()
 
@@ -33,40 +34,38 @@ max_backtrack = 5
 # Part 1 ---------------------------------------------------------------------------------------
 
 
-dirs = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
-inverse = {"^": "v", ">": "<", "v": "^", "<": ">", "o": "o"}
+def parse_input(input):
+    return [[int(char) for char in line] for line in input]
+
+
+dirs = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+expected_total = None
+from_start = None
+grid = None
 
 
 def part1(input=data) -> int:
+    global grid
     grid = parse_input(input)
     return find_least_heat_loss(grid)
 
 
-def parse_input(input):
-    """Parse the input data into a grid."""
-    return [[int(char) for char in line] for line in input]
-
-
-def find_least_heat_loss(losses):
-    """Find the path with the least heat loss."""
-    rows, cols = len(losses), len(losses[0])
-    traversal = get_diagonal_traversal(len(losses), len(losses[0]))
-    losses = pad_with_inf(losses)
+def find_least_heat_loss(input):
+    global expected_total, from_start
+    rows, cols = len(input), len(input[0])
+    traversal = get_diagonal_traversal(len(input), len(input[0]))
+    loss_matrix = pad_with_inf(input)
     old, new = False, True
     expected_total = [[float("inf")] * (cols + 2) for _ in range(rows + 2)]
-    expected_total[rows][cols] = losses[rows][cols]
+    expected_total[rows][cols] = loss_matrix[rows][cols]
     while old != new:
         old = new
-        expected_total, directions = update_expected_losses(
-            expected_total, losses, traversal
+        expected_total, _ = update_expected_losses(
+            expected_total, loss_matrix, traversal
         )
         new = "".join(str(c) for row in expected_total for c in row)
-    steps, loss = calculate_loss(losses, directions)
-    if debug:
-        print("Simple solution (steps, loss)", steps, loss)
-    steps, loss = calculate_route(losses, directions, [(1, 1)], [0], [(1, 1)])
-    if debug:
-        print("Complex solution (steps, loss)", steps, loss)
+    from_start = [[float("inf")] * (cols + 2) for _ in range(rows + 2)]
+    loss = a_star((1, 1), (rows, cols))
     return loss
 
 
@@ -121,75 +120,62 @@ def update_expected_losses(expected_total, losses, traversal):
     return expected_total, directions
 
 
-def calculate_route(
-    loss_matrix,
-    directions,
-    coords,
-    losses,
-    visited,
-    lvl=0,
-    steps="o",
-    forbidden="",
-):
-    if forbidden == "o":  # Can't backtrack from the start
-        return steps, float("inf")
-    min_loss = float("inf")
-    min_steps = "o"
-    row, col = coords[-1]
-    while row != len(loss_matrix) - 2 or col != len(loss_matrix[0]) - 2:
-        opts = directions[row][col]
-        if opts == 0:  # Return if we went out of bounds
-            return steps, float("inf")
-        if opts[0] * 3 == steps[-3:]:
-            if lvl < 100:  # Fork and go back if we're at 3 in a row
-                for b in range(1, min(max_backtrack, len(steps)) + 1):
-                    if debug:
-                        print(
-                            "Level",
-                            lvl,
-                            "- Three in a row after",
-                            len(steps),
-                            "steps, backtracking",
-                            b,
-                        )
-                        print(coords[:-b])
-                    alt_steps, alt_loss = calculate_route(
-                        loss_matrix,
-                        directions,
-                        coords[:-b],
-                        losses[:-b],
-                        visited[:-b],
-                        lvl + 1,
-                        steps[:-b],
-                        steps[-b],
-                    )
-                    if alt_loss < min_loss:
-                        min_steps, min_loss = alt_steps, alt_loss
-            elif debug:
-                print("Recursion level too high after", len(steps))
-        found = False
-        for o in opts:
-            d = dirs[o]
-            row += d[0]
-            col += d[1]
-            if (
-                o != forbidden
-                and o * 3 != steps[-3:]
-                and o != inverse[steps[-1]]
-                and (row, col) not in visited
-            ):
-                found = True
-                break
-        if not found:
-            return steps, float("inf")
-        steps += o
-        losses.append(losses[-1] + loss_matrix[row][col])
-        coords.append((row, col))
-        visited.append((row, col))
-    losses = losses[-1]
-    if min_loss < losses:
-        return min_steps, min_loss
-    return steps, losses
+def h(c):
+    return expected_total[c[0]][c[1]]
+
+
+def set_g(c, v):
+    global from_start
+    from_start[c[0]][c[1]] = v
+
+
+def g(c):
+    return from_start[c[0]][c[1]]
+
+
+def f(c):
+    return g(c) + h(c)
+
+
+def loss(c):
+    return grid[c[0] - 1][c[1] - 1]
+
+
+def get_neighbors(c, d):
+    neighbors = [(c[0] - 1, c[1]), (c[0], c[1] + 1), (c[0] + 1, c[1]), (c[0], c[1] - 1)]
+    return [
+        n for n in neighbors if h(n) != float("inf") and n[0] + d[0] + n[1] + d[1] != 0
+    ]
+
+
+def a_star(start, goal):
+    open_set = []
+    heapq.heappush(open_set, (h(start), start, [(0, 0)]))
+    came_from = {}
+
+    from_start[start[0]][start[1]] = 0
+
+    while open_set:
+        _, pos, d = heapq.heappop(open_set)
+        if pos == goal:
+            print("Found goal")
+            return 4
+
+        neighbors = get_neighbors(pos, d[-1])
+        for i, neighbor in enumerate(neighbors):
+            if all(e == dirs[i] for e in d[-3:]):
+                continue
+            tentative_g_score = g(pos) + loss(neighbor)
+            if tentative_g_score < g(neighbor):
+                # This is a better path, record it
+                came_from[neighbor] = pos
+                set_g(neighbor, tentative_g_score)
+                if neighbor not in [item[1] for item in open_set]:
+                    d_copy = d.copy()
+                    d_copy.append(dirs[i])
+                    heapq.heappush(open_set, (f(neighbor), neighbor, d_copy))
+
+    return float("inf")
 
 
 def calculate_loss(losses, directions):
