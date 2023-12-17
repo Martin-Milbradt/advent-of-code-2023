@@ -43,15 +43,12 @@ def part1(input=data) -> int:
 
 def part2(input=data) -> int:
     steps = input[0].split(",")
-
     boxes = [{} for _ in range(256)]
-
     for step in steps:
         parts = re.split("[-=]", step)
         label = parts[0]
         focal_length = int(parts[1]) if parts[1] else None
         update_boxes(boxes, label, step[len(label)], focal_length)
-
     return calculate_focusing_power(boxes)
 
 
@@ -62,7 +59,7 @@ def update_boxes(boxes, label, action, focal_length):
             del boxes[box_number][label]
         except KeyError:
             pass
-    elif action == "=":
+    else:
         boxes[box_number][label] = focal_length
 
 
