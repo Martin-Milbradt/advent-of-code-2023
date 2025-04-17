@@ -1,5 +1,5 @@
-from modules import DataManager
 import sympy
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -106,7 +106,7 @@ def follow_instructions_multi_start(network, instructions):
         steps += 1
         LR = 0 if instructions[idx] == "L" else 1
         nodes = [network[node][LR] for node in nodes]
-        for start, current in zip(starts, nodes):
+        for start, current in zip(starts, nodes, strict=False):
             if (current, idx) in journey[start]:
                 loops.append(steps - journey[start].index((current, idx)))
                 nodes.remove(current)

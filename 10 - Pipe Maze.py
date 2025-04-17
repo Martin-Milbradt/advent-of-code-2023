@@ -43,6 +43,7 @@ def get_start(grid):
         for j, cell in enumerate(row):
             if cell == "S":
                 return [i, j]
+    return None
 
 
 # Part 1 ---------------------------------------------------------------------------------------

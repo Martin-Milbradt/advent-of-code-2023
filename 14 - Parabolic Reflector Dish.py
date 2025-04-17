@@ -1,5 +1,6 @@
-from modules import DataManager
 import copy
+
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -37,7 +38,7 @@ free_dirs = [
 ]  # Steps for the next free position depending tilt
 
 
-def tilt(grid, dir=0):
+def tilt(grid, dir=0) -> None:
     j_max = len(grid[0]) - 1
     i_max = len(grid) - 1
     free = dirs[dir][0]
@@ -147,7 +148,7 @@ def part2(input=data, cycles=1e9) -> int:
 # Debugging ------------------------------------------------------------------------------------
 
 
-def print_grid(grid):
+def print_grid(grid) -> None:
     for line in grid:
         print("".join(line))
     print()

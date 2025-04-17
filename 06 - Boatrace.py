@@ -1,5 +1,6 @@
-from modules import DataManager
 import math
+
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -27,7 +28,7 @@ def calculate_ways_to_win_race(total_time, record_distance):
     return int(
         previous(longest_hold)
         - next(shortest_hold)
-        + 1  # ceil and floor don't work because of exact matches
+        + 1,  # ceil and floor don't work because of exact matches
     )  # cast to int because of machine precision
 
 
@@ -55,7 +56,7 @@ def parse_data(input):
 def calculate_total_ways(input):
     total_ways = 1
     times, distances = parse_data(input)
-    for time, distance in zip(times, distances):
+    for time, distance in zip(times, distances, strict=False):
         ways_to_win = calculate_ways_to_win_race(time, distance)
         total_ways *= ways_to_win
     return total_ways

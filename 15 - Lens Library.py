@@ -1,5 +1,7 @@
-from modules import DataManager
+import contextlib
 import re
+
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -52,13 +54,11 @@ def part2(input=data) -> int:
     return calculate_focusing_power(boxes)
 
 
-def update_boxes(boxes, label, action, focal_length):
+def update_boxes(boxes, label, action, focal_length) -> None:
     box_number = custom_hash(label)
     if action == "-":
-        try:
+        with contextlib.suppress(KeyError):
             del boxes[box_number][label]
-        except KeyError:
-            pass
     else:
         boxes[box_number][label] = focal_length
 

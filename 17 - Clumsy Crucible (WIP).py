@@ -1,5 +1,6 @@
-from modules import DataManager
 import heapq
+
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -61,12 +62,11 @@ def find_least_heat_loss(input):
     while old != new:
         old = new
         expected_total, _ = update_expected_losses(
-            expected_total, loss_matrix, traversal
+            expected_total, loss_matrix, traversal,
         )
         new = "".join(str(c) for row in expected_total for c in row)
     from_start = [[float("inf")] * (cols + 2) for _ in range(rows + 2)]
-    loss = a_star((1, 1), (rows, cols))
-    return loss
+    return a_star((1, 1), (rows, cols))
 
 
 def pad_with_inf(matrix):
@@ -124,7 +124,7 @@ def h(c):
     return expected_total[c[0]][c[1]]
 
 
-def set_g(c, v):
+def set_g(c, v) -> None:
     global from_start
     from_start[c[0]][c[1]] = v
 

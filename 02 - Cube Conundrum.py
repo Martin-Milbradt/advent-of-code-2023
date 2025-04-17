@@ -38,7 +38,7 @@ def part1():
     return sum_possible_game_ids(data)
 
 
-def is_game_possible(subsets, constraints):
+def is_game_possible(subsets, constraints) -> bool:
     for subset in subsets:
         for color in subset:
             if subset[color] > constraints[color]:

@@ -1,5 +1,6 @@
-from modules import DataManager
 from enum import Enum
+
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -45,9 +46,8 @@ def calculate_total_winnings(input, rank_hand, values):
     # Sort hands by type and then by card values
     hands.sort(key=lambda x: (x[0].value, [card_value(card, values) for card in x[1]]))
     winnings = [bid * (rank + 1) for rank, (_, _, bid) in enumerate(hands)]
-    total_winnings = sum(winnings)
+    return sum(winnings)
 
-    return total_winnings
 
 
 def rank_hand(counts) -> Ranking:
@@ -57,23 +57,23 @@ def rank_hand(counts) -> Ranking:
     # Classify based on counts
     if max_count == 5:
         return Ranking.FIVE
-    elif max_count == 4:
+    if max_count == 4:
         return Ranking.FOUR
-    elif sorted(counts.values()) == [2, 3]:
+    if sorted(counts.values()) == [2, 3]:
         return Ranking.FULL
-    elif max_count == 3:
+    if max_count == 3:
         return Ranking.THREE
-    elif sorted(counts.values()) == [1, 2, 2]:
+    if sorted(counts.values()) == [1, 2, 2]:
         return Ranking.PAIRS
-    elif max_count == 2:
+    if max_count == 2:
         return Ranking.TWO
-    elif max_count == 1:
+    if max_count == 1:
         return Ranking.ONE
     raise ValueError(f"No classification found: {counts}")
 
 
 def card_value(card, values):
-    if card in values.keys():
+    if card in values:
         return values[card]
     return int(card)
 

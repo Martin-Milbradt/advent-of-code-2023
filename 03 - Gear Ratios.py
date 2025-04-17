@@ -71,7 +71,7 @@ def is_symbol(char):
     return not char.isdigit() and char != "."
 
 
-def adjacent_to_symbol(i, j):
+def adjacent_to_symbol(i, j) -> bool:
     for di, dj in directions:
         if in_bounds(i + di, j + dj) and is_symbol(data[i + di][j + dj]):
             return True

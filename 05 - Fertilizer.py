@@ -113,7 +113,7 @@ def parse_data_range(data):
         elif len(line or "") > 0:
             new_start, start, length = [int(x) for x in line.split()]
             maps[-1].append(
-                (start, start + length - 1, new_start - start)
+                (start, start + length - 1, new_start - start),
             )  # refactoring so it feels natural to me: (start, end, offset)
 
     return seeds, maps
@@ -129,7 +129,7 @@ def find_lowest_location_arrays(data):
 
 
 def apply_mapping_tuples(
-    mapping: list[tuple[int, int, int]], ranges: list[tuple[int, int]]
+    mapping: list[tuple[int, int, int]], ranges: list[tuple[int, int]],
 ) -> list[tuple[int, int]]:
     new_ranges = []
     for start, end in ranges:
@@ -144,7 +144,7 @@ def apply_mapping_tuples(
                     ranges.append((start, map_start - 1))
 
                 new_ranges.append(
-                    (intersection_begin + offset, intersection_end + offset)
+                    (intersection_begin + offset, intersection_end + offset),
                 )
 
                 if end > map_end:

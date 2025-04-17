@@ -18,7 +18,7 @@ sum = 0
 for val in data:
     for key, value in num_dict.items():
         val = val.replace(
-            key, key + value + key
+            key, key + value + key,
         )  # Required since the numbers can overlap: e.g. twone contains one and two
     first_number = next(char for char in val if char.isdigit())
     last_number = next(char for char in reversed(val) if char.isdigit())

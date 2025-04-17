@@ -95,7 +95,7 @@ def find_horizontal_reflection(pattern, errors=False):
 
 
 def find_vertical_reflection(pattern, errors=False):
-    transposed = ["".join(t) for t in zip(*pattern)]
+    transposed = ["".join(t) for t in zip(*pattern, strict=False)]
     return find_horizontal_reflection(transposed, errors)
 
 
@@ -114,7 +114,7 @@ def part2(input=data) -> int:
 
 
 def off_by_one(str1, str2):
-    differences = sum(1 for a, b in zip(str1, str2) if a != b)
+    differences = sum(1 for a, b in zip(str1, str2, strict=False) if a != b)
     return differences == 1
 
 

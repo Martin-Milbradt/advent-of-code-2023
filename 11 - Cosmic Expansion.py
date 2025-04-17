@@ -1,6 +1,5 @@
 from modules import DataManager
 
-
 data = DataManager(__file__).get_data_string()
 
 
@@ -45,7 +44,7 @@ def sum_distances(input, factor) -> int:
         print_galaxy_positions(galaxy_positions)
 
     return int(  # cast to int since we're dealing with large numbers
-        sum(calculate_distances(galaxy_positions, empty_rows, empty_cols, factor))
+        sum(calculate_distances(galaxy_positions, empty_rows, empty_cols, factor)),
     )
 
 
@@ -98,13 +97,13 @@ def part2_test(input=data) -> int:
 # Debugging ------------------------------------------------------------------------------------
 
 
-def print_universe(universe):
+def print_universe(universe) -> None:
     print("Universe:")
     for row in universe:
         print("".join(row))
 
 
-def print_galaxy_positions(galaxy_positions):
+def print_galaxy_positions(galaxy_positions) -> None:
     print("Galaxy Positions:")
     for i, pos in enumerate(galaxy_positions):
         print(f"Galaxy {i+1}: Position {pos}")

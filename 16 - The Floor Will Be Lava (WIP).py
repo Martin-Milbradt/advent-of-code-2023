@@ -27,7 +27,7 @@ def part1(input=data) -> int:
             return {"right": "up", "up": "right", "left": "down", "down": "left"}[
                 direction
             ]
-        elif tile == "\\":
+        if tile == "\\":
             return {"right": "down", "down": "right", "left": "up", "up": "left"}[
                 direction
             ]
@@ -38,12 +38,13 @@ def part1(input=data) -> int:
         x, y = pos
         if direction == "right":
             return (x, y + 1)
-        elif direction == "left":
+        if direction == "left":
             return (x, y - 1)
-        elif direction == "up":
+        if direction == "up":
             return (x - 1, y)
-        elif direction == "down":
+        if direction == "down":
             return (x + 1, y)
+        return None
 
     # Initialize variables
     energized_tiles = set()

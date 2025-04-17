@@ -1,6 +1,6 @@
-from modules import DataManager
 import time
 
+from modules import DataManager
 
 data = DataManager(__file__).get_data_string()
 
@@ -39,8 +39,8 @@ def count_arrangements(springs, groups, lookup=None, streak=False) -> int:
         looking_up += after - before
         if total > next_print:
             print(
-                "Time spent looking up: {:.2f}".format(looking_up),
-                "s. Ratio: {:.1%}".format(looking_up / total),
+                f"Time spent looking up: {looking_up:.2f}",
+                f"s. Ratio: {looking_up / total:.1%}",
             )
             next_print += 1
     if val:
@@ -60,7 +60,7 @@ def count_arrangements(springs, groups, lookup=None, streak=False) -> int:
                 val = count_broken(springs[1:], groups, lookup)
             case "?":
                 val = count_operational(
-                    springs[1:], groups.copy(), lookup, streak
+                    springs[1:], groups.copy(), lookup, streak,
                 ) + count_broken(springs[1:], groups.copy(), lookup)
             case _:
                 raise ValueError("Unexpected character:" + springs[0])
